@@ -6,6 +6,12 @@ namespace BankAccountTesting
     {
         private BankAccount _recipient;
 
+        [SetUp]
+        public void Setup()
+        { 
+            _recipient = new BankAccount("654321", 20m); // Recipient account with initial balance
+        }
+
         [Test]
         public void ShouldCreateBankAccountWithInitialBalance()
         {
@@ -125,31 +131,51 @@ namespace BankAccountTesting
 
             // Act
             BankAccount sut = new BankAccount(accountNumber, initialBalance);
-
-            _recipient = new BankAccount("654321", 20m);
             var ex = Assert.Throws<InvalidOperationException>(() => sut.TransferTo(_recipient, 300m));
 
             // Assert
             Assert.That(ex.Message, Is.EqualTo("Insufficient funds for transfer!"));
             Assert.That(sut.Balance, Is.EqualTo(100m));
-            Assert.That(_recipient.Balance, Is.EqualTo(20m));
 
         }
 
-        //[Test]
-        //public void ShouldNotTransferWhenAmountIsInvalid()
-        //{
-        //    // Arrange
-        //    string accountNumber = "123456";
-        //    decimal initialBalance = 100m;
+        [Test]
+        public void ShouldNotTransferWhenAmountIsInvalid()
+        {
+            // Arrange
+            string accountNumber = "123456";
+            decimal initialBalance = 100m;
 
 
-        //    // Act
-        //    BankAccount sut = new BankAccount(accountNumber, initialBalance);
+            // Act
+            BankAccount sut = new BankAccount(accountNumber, initialBalance);
+            var ex = Assert.Throws<ArgumentException>(() => sut.TransferTo(_recipient, 0m));
 
+            // Assert
+            Assert.That(ex.Message, Is.EqualTo("Transfer amount must be positive!"));
+            Assert.That(sut.Balance, Is.EqualTo(100m));
+        }
 
+        [Test]
+        public void ShouldNotTransferWhenRecipientIsNull()
+        {
+            // Arrange
+            string accountNumber = "123456";
+            decimal initiBalance = 100m;
 
-        //    // Assert
-        //}
+            // Act
+            BankAccount sut = new BankAccount(accountNumber, initiBalance);
+
+            // Act and Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => sut.TransferTo(null, 50m));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ex.ParamName, Is.EqualTo("recipient"));
+                Assert.That(ex.Message, Does.Contain("Recipient account cannot be null!"));
+                Assert.That(sut.Balance, Is.EqualTo(100m));
+            });
+
+        }
     }
 }

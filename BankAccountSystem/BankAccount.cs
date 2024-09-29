@@ -66,12 +66,12 @@
         { 
             if (recipient == null)
             {
-                throw new ArgumentNullException(nameof(recipient), "recipient cannot be null!");
+                throw new ArgumentNullException(nameof(recipient), "Recipient account cannot be null!");
             }
 
-            if (amount < 0)
+            if (amount <= 0)
             {
-                throw new ArgumentException("Trasfer amount must be positive!");
+                throw new ArgumentException("Transfer amount must be positive!");
             }
 
             if (amount > Balance)
