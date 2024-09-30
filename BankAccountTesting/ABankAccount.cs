@@ -154,7 +154,7 @@ namespace BankAccountTesting
             sut.GetAccountStatus();
 
             // Assert
-            Assert.That("Low", Is.EqualTo(sut.GetAccountStatus()));
+            Assert.That(sut.GetAccountStatus(), Is.EqualTo("Low"));
         }
 
         [Test]
@@ -168,7 +168,7 @@ namespace BankAccountTesting
             BankAccount sut = new BankAccount(accountNumber, initialBalance);
 
             // Assert
-            Assert.That("Normal", Is.EqualTo(sut.GetAccountStatus()));
+            Assert.That(sut.GetAccountStatus(), Is.EqualTo("Normal"));
         }
 
         [Test]
@@ -182,7 +182,7 @@ namespace BankAccountTesting
             BankAccount sut = new BankAccount(accountNumber, initialBalance);
 
             // Assert
-            Assert.That("High", Is.EqualTo(sut.GetAccountStatus()));
+            Assert.That(sut.GetAccountStatus(), Is.EqualTo("High"));
 
         }
 
@@ -317,8 +317,8 @@ namespace BankAccountTesting
 
         }
 
-        [TestCase(99.99, ExpectedResult = "Low", TestName ="GetAccountStatusAsLowBelow100")]
-        [TestCase(100, ExpectedResult = "Normal", TestName = "GetAccountStatusNormalAt100")]
+        [TestCase(99.99, ExpectedResult = "Low", TestName = "GetAccountStatusAsLowBelow100")]
+        [TestCase(100, ExpectedResult = "Normal", TestName = "GetAccountStatusAsNormalAt100")]
         [TestCase(100.01, ExpectedResult = "Normal", TestName = "GetAccountStatusAsNormalAbove100")]
         [TestCase(999.99, ExpectedResult = "Normal", TestName = "GetAccountStatusAsNormalBelow1000")]
         [TestCase(1000, ExpectedResult = "High", TestName = "GetAccountStatusAsHighAt1000")]
