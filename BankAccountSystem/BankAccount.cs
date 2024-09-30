@@ -22,7 +22,7 @@
 
         public void Deposit(decimal amount)
         { 
-            if (amount < 0)
+            if (amount <= 0)
                 {
                     throw new ArgumentException("Deposit amount must be positive!");
                 }
@@ -31,7 +31,7 @@
 
         public void Withdraw(decimal amount)
         {
-            if (amount < 0)
+            if (amount <= 0)
             { 
                 throw new ArgumentException("Withdraw amount must be positive!");
             }

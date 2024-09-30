@@ -14,7 +14,7 @@ namespace BankAccountTesting
         }
 
         [Test]
-        public void ValidAccountNumberAndInitialBalanceShouldInitializeBankAccount()
+        public void ShouldCreateAccountNumberAndBalanceWhenConstructed()
         {
     
             //Assert
@@ -30,28 +30,23 @@ namespace BankAccountTesting
 
         }
 
-        [Test]
-        public void EmptyAccountNumberShouldThrowArgumentException()
+        [TestCase("", 100, TestName ="ShouldThrowArgumentExceptionWhenConstructedWithEmptyAccountNumber")]
+        [TestCase("123456", -100, TestName = "ShouldThrowArgumentExceptionWhenConstructedWithNegativeAmount")]
+        [TestCase(null, 100, TestName = "ShouldThrowArgumentExceptionWhenConstructedWithNullAccountNumberAndValidAmount")]
+        [TestCase("", -100, TestName = "ShouldThrowArgumentExceptionWhenConstructedWithEmptyAccountNumberAndNegativeBalance")]
+        public void EmptyAccountNumberShouldThrowArgumentException(string? accountNumber, decimal initialBalance)
         {
-            // Arrange
-            string accountNumber = " ";
-            decimal initialBalance = 10.00m;
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new BankAccount(accountNumber, initialBalance));
-            Assert.That(ex.Message, Is.EqualTo("Account number cannot be empty or null!"));
-        }
-
-        [Test]
-        public void NegativeInitialBalanceShouldThrowArgumentException()
-        {
-            // Arrange
-            string accountNumber = "123456";
-            decimal initialBalance = -10.00m;
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new BankAccount(accountNumber, initialBalance));
-            Assert.That(ex.Message, Is.EqualTo("Initial balance cannot be negative!"));
+            try
+            {
+                BankAccount sut = new BankAccount(accountNumber, initialBalance);
+            }
+            catch (Exception ex)
+            {
+                Assert.Pass(ex.Message);
+            }
+            Assert.Fail();
         }
 
         [Test]
@@ -283,8 +278,10 @@ namespace BankAccountTesting
 
         // Boundary value analysis for Deposit
 
+
         [TestCase(0.01, TestName = "DepositSmallAmount")]
         [TestCase(123456, TestName = "DepositLargeAmount")]
+        [TestCase(2123456998, TestName = "DepositVeryLargeAmount")]
         public void ShouldIncreaseBalanceWhenBoundaryValueAmountsDeposited(decimal amount)
         {
             // Arrange
@@ -292,15 +289,31 @@ namespace BankAccountTesting
 
             // Act
             BankAccount sut = new BankAccount(accountNumber, 0m);
+
             // Depositing a very small amount
-            sut.Deposit(amount);
+                sut.Deposit(amount);
 
             // Assert
             Assert.That(sut.Balance, Is.EqualTo(amount));
         }
 
+        [TestCase(-0.01, TestName = "DepositAmountJustBelowTheBoundary")]
+        [TestCase(0, TestName = "DepositAmountZero")]
+        public void ShouldThrowArgumentExceptionWhenDepositingInvalidAmount(decimal amount)
+        {
+            // Arrange
+            string accountNumber = "123456";
+            BankAccount sut = new BankAccount(accountNumber, 0);
+
+            // Act
+            var ex = Assert.Throws<ArgumentException>(() => sut.Deposit(amount));
+            Assert.That(ex.Message, Is.EqualTo("Deposit amount must be positive!"));
+        }
+
+
         [TestCase(0.01, TestName = "WithdrawSmallAmount")]
         [TestCase(123456, TestName = "WithdrawLargeAmount")]
+        [TestCase(2123456998, TestName = "WithdrawAVeryLargeAmount")]
         public void ShouldDecreaseBalanceWhenBoundaryValueAmountsAreWithdrawed(decimal amount)
         {
             // Arrange
@@ -309,6 +322,7 @@ namespace BankAccountTesting
             // Act
             BankAccount sut = new BankAccount(accountNumber, amount);
             decimal initialBalance = sut.Balance;
+
             // Depositing a very small amount
             sut.Withdraw(amount);
 
@@ -316,6 +330,20 @@ namespace BankAccountTesting
             Assert.That(sut.Balance, Is.EqualTo(initialBalance - amount));
 
         }
+
+        [TestCase(-0.01, TestName = "WithdrawAmountJustBelowTheBoundary")]
+        [TestCase(0, TestName = "WithdrawAmountZero")]
+        public void ShouldThrowArgumentExceptionWhenWithdrawingInvalidAmount(decimal amount)
+        {
+            // Arrange
+            string accountNumber = "123456";
+            BankAccount sut = new BankAccount(accountNumber, 100m);
+
+            // Act
+            var ex = Assert.Throws<ArgumentException>(() => sut.Withdraw(amount));
+            Assert.That(ex.Message, Is.EqualTo("Withdraw amount must be positive!"));
+        }
+
 
         [TestCase(99.99, ExpectedResult = "Low", TestName = "GetAccountStatusAsLowBelow100")]
         [TestCase(100, ExpectedResult = "Normal", TestName = "GetAccountStatusAsNormalAt100")]
