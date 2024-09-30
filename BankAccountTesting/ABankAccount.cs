@@ -260,20 +260,42 @@ namespace BankAccountTesting
 
         // Boundary Value Analysis for Constructor
 
-        [TestCase(0, TestName ="ConstructorWithZeroBalance")]
-        [TestCase(0.01, TestName = "ConstructorWithSmallPositiveValue")]
-        [TestCase(1000000000, TestName = "ConstructorWithVeryLargePositiveValue")]
-        public void ShouldInitializeBankAccountWithBoundaryValuesAsInitialBalance(decimal initialBalance)
-        {
-            // Arrange
-            string accountNumber = "123456";
+        [TestCase("123456", 0, TestName = "ConstructorBoudaryAnalysisWithZeroBalance")]
+        [TestCase("123456", 0.01, TestName = "ConstructorBoudaryAnalysisWithSmallPositiveValue")]
+        [TestCase("123456", 1000000000, TestName = "ConstructorBoudaryAnalysisWithVeryLargePositiveValue")]
 
-            // Act
+        public void ShouldInitializeBankAccountWithBoundaryValuesAsInitialBalance(string accountNumber, decimal initialBalance)
+        { 
+            // Arrange/Act
             BankAccount sut = new BankAccount(accountNumber, initialBalance);
 
             // Assert
-            Assert.That(sut.Balance, Is.EqualTo(initialBalance));
             Assert.That(sut.AccountNumber, Is.EqualTo(accountNumber));
+            Assert.That(sut.Balance, Is.EqualTo(initialBalance));
+
+        }
+
+
+        [TestCase("", -0.01, TestName = "ConstructorBoudaryAnalysisWithEmptyAccountNumberAndNegativeBalance")]
+        [TestCase("", 0, TestName = "ConstructorBoudaryAnalysisWithEmptyAccountNumberAndZeroBalance")]
+        [TestCase(null, 0.01, TestName = "ConstructorBoudaryAnalysisWithNullAccountNumberAndSmallPositiveValue")]
+        [TestCase("123456", -1000000000, TestName = "ConstructorBoudaryAnalysisWithVeryLargeNegativeValue")]
+        public void ShouldNotInitializeBankAccountWithBoundaryValuesAsInitialBalance(string? accountNumber, decimal initialBalance)
+        {
+
+            // Assert
+            try
+            {
+                BankAccount sut = new BankAccount(accountNumber, initialBalance);
+                Assert.That(sut.Balance, Is.EqualTo(initialBalance));
+                Assert.That(sut.AccountNumber, Is.EqualTo(accountNumber));
+            }
+            catch (Exception ex)
+            {
+                Assert.Pass(ex.Message);
+            }
+
+            Assert.Fail();
         }
 
         // Boundary value analysis for Deposit
