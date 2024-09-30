@@ -38,7 +38,7 @@
 
             if (amount > Balance)
             {
-                throw new ArgumentException("Insufficient balance!");
+                throw new InvalidOperationException("Insufficient balance!");
             }
 
             Balance -= amount;
